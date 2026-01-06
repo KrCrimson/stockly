@@ -1,8 +1,19 @@
 {
-  "rewrites": [
+  "version": 2,
+  "name": "stockly-frontend",
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    { 
+      "src": "/(.*)",
+      "dest": "/index.html" 
     }
   ]
 }
