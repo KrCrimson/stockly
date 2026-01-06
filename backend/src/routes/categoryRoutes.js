@@ -1,4 +1,5 @@
 const express = require('express');
+const { protect, authorize } = require('../middleware/auth');
 const {
   getCategories,
   getActiveCategories,
@@ -10,17 +11,20 @@ const {
 
 const router = express.Router();
 
+// Aplicar autenticación a todas las rutas
+router.use(protect);
+
 // Rutas especiales
 router.get('/active', getActiveCategories);
 
 // Rutas CRUD básicas
 router.route('/')
   .get(getCategories)
-  .post(createCategory);
+  .post(authorize('admin', 'manager'), createCategory);
 
 router.route('/:id')
   .get(getCategory)
-  .put(updateCategory)
-  .delete(deleteCategory);
+  .put(authorize('admin', 'manager'), updateCategory)
+  .delete(authorize('admin'), deleteCategory);
 
 module.exports = router;

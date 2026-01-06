@@ -12,6 +12,7 @@ const stockMovementRoutes = require('./routes/stockMovementRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const supplierRoutes = require('./routes/supplierRoutes');
+const authRoutes = require('./routes/authRoutes');
 const { errorHandler } = require('./middleware/errorHandler');
 const { connectDB } = require('./config/database');
 
@@ -52,6 +53,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas
+app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/stock-movements', stockMovementRoutes);
 app.use('/api/dashboard', dashboardRoutes);

@@ -1,3 +1,15 @@
+// Tipos para autenticación
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager' | 'employee';
+  isActive: boolean;
+  lastLogin?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Tipos para productos
 export interface Product {
   _id: string;

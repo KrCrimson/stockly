@@ -23,10 +23,29 @@ const api = axios.create({
   },
 });
 
-// Interceptor para manejo de errores
+// Interceptor para añadir token a las requests
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Interceptor para manejo de errores y tokens expirados
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Si el token ha expirado o es inválido
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
     console.error('API Error:', error);
     return Promise.reject(error);
   }
@@ -323,13 +342,56 @@ export const apiUtils = {
   },
 };
 
+// ============================================================================
+// AUTENTICACIÓN
+// ============================================================================
+
+export const authService = {
+  // Login
+  login: async (email: string, password: string) => {
+    const response = await api.post('/auth/login', { email, password });
+    return response.data;
+  },
+
+  // Register
+  register: async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role?: 'admin' | 'manager' | 'employee';
+  }) => {
+    const response = await api.post('/auth/register', userData);
+    return response.data;
+  },
+
+  // Logout
+  logout: async () => {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  },
+
+  // Obtener usuario actual
+  getCurrentUser: async () => {
+    const response = await api.get('/auth/me');
+    return response.data;
+  },
+
+  // Verificar token
+  verifyToken: async () => {
+    const response = await api.get('/auth/verify-token');
+    return response.data;
+  },
+};
+
 const apiService = {
   products: productService,
   movements: movementService,
   dashboard: dashboardService,
   categories: categoryService,
   suppliers: supplierService,
+  auth: authService,
   utils: apiUtils,
 };
 
 export default apiService;
+export { api };
