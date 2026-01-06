@@ -1,0 +1,80 @@
+{
+    "info": {
+        "name": "Stock Management API",
+        "description": "API collection for Stock Management System testing",
+        "version": "1.0.0"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Products",
+            "item": [
+                {
+                    "name": "Get All Products",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "products"]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Product",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"code\": \"PROD001\",\n  \"name\": \"Sample Product\",\n  \"minimumStock\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/products",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "products"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Movements",
+            "item": [
+                {
+                    "name": "Register Stock In",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"productId\": \"guid-here\",\n  \"quantity\": 100,\n  \"reason\": \"Initial Stock\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/api/movements/stock-in",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["api", "movements", "stock-in"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
