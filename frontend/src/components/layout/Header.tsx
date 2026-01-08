@@ -22,29 +22,11 @@ const Header: React.FC = () => {
   };
 
   const getRoleIcon = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return <Shield className="h-4 w-4 text-red-500" />;
-      case 'manager':
-        return <UserCheck className="h-4 w-4 text-blue-500" />;
-      case 'employee':
-        return <Users className="h-4 w-4 text-green-500" />;
-      default:
-        return <User className="h-4 w-4 text-gray-500" />;
-    }
+    return <User className="h-4 w-4 text-blue-500" />;
   };
 
   const getRoleLabel = (role: string) => {
-    switch (role) {
-      case 'admin':
-        return 'Administrador';
-      case 'manager':
-        return 'Gerente';
-      case 'employee':
-        return 'Empleado';
-      default:
-        return 'Usuario';
-    }
+    return 'Usuario';
   };
 
   return (

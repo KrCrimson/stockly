@@ -20,26 +20,60 @@ function App() {
             {/* Ruta de login (no protegida) */}
             <Route path="/login" element={<Login />} />
             
-            {/* Rutas protegidas */}
-            <Route 
-              path="/*" 
-              element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/categories" element={<Categories />} />
-                      <Route path="/suppliers" element={<Suppliers />} />
-                      <Route path="/movements" element={<Movements />} />
-                      <Route path="/reports" element={<Reports />} />
-                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                  </Layout>
-                </ProtectedRoute>
-              } 
-            />
+            {/* Ruta raíz que redirige */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            
+            {/* Rutas protegidas con Layout */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/products" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Products />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/categories" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Categories />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/suppliers" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Suppliers />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/movements" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Movements />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/reports" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Reports />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            {/* Ruta catch-all */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </div>
       </Router>
