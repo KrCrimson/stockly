@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { AppProvider } from './context/AppContext';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -15,15 +16,16 @@ import Reports from './pages/Reports';
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <div className="App">
-          <Routes>
-            {/* Rutas de autenticación (no protegidas) */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            
-            {/* Ruta raíz que redirige */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <AppProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              {/* Rutas de autenticación (no protegidas) */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              
+              {/* Ruta raíz que redirige */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
             
             {/* Rutas protegidas con Layout */}
             <Route path="/dashboard" element={
@@ -79,6 +81,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </AppProvider>
     </AuthProvider>
   );
 }
