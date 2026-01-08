@@ -5,13 +5,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Obtener todos los productos
 // @route   GET /api/products
-// @access  Public
+// @access  Private
 const getProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
   
-  const filter = {};
+  const filter = { user: req.user._id };
   
   // Filtros
   if (req.query.category) {
@@ -71,7 +71,12 @@ const getProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Public
 const createProduct = asyncHandler(async (req, res) => {
-  const product = await Product.create(req.body);
+  const productData = {
+    ...req.body,
+    user: req.user._id
+  };
+  
+  const product = await Product.create(productData);
   
   res.status(201).json({
     success: true,
@@ -82,13 +87,13 @@ const createProduct = asyncHandler(async (req, res) => {
 
 // @desc    Actualizar producto
 // @route   PUT /api/products/:id
-// @access  Public
+// @access  Private
 const updateProduct = asyncHandler(async (req, res) => {
   console.log('📝 Datos recibidos para actualización:', req.body);
   console.log('🔍 ID del producto:', req.params.id);
   
-  const product = await Product.findByIdAndUpdate(
-    req.params.id,
+  const product = await Product.findOneAndUpdate(
+    { _id: req.params.id, user: req.user._id },
     req.body,
     { new: true, runValidators: true }
   );

@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const stockMovementSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'El usuario es obligatorio']
+  },
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
@@ -206,5 +211,10 @@ stockMovementSchema.methods.reverse = async function(performedBy, notes) {
   
   return reversal;
 };
+
+// Índices para optimización por usuario
+stockMovementSchema.index({ user: 1, createdAt: -1 });
+stockMovementSchema.index({ user: 1, product: 1, createdAt: -1 });
+stockMovementSchema.index({ user: 1, type: 1, createdAt: -1 });
 
 module.exports = mongoose.model('StockMovement', stockMovementSchema);

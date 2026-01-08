@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const productSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'El usuario es obligatorio']
+  },
   name: {
     type: String,
     required: [true, 'El nombre del producto es obligatorio'],
@@ -154,9 +159,16 @@ productSchema.pre('save', async function(next) {
   next();
 });
 
-// Método estático para buscar productos con stock bajo
-productSchema.statics.findLowStock = function() {
+// Índices para optimización y unicidad por usuario
+productSchema.index({ user: 1, sku: 1 }, { unique: true });
+productSchema.index({ user: 1, name: 1 });
+productSchema.index({ user: 1, category: 1 });
+productSchema.index({ user: 1, isActive: 1 });
+
+// Método estático para buscar productos con stock bajo por usuario
+productSchema.statics.findLowStock = function(userId) {
   return this.find({
+    user: userId,
     $expr: { $lte: ['$currentStock', '$minStockLevel'] },
     isActive: true
   });

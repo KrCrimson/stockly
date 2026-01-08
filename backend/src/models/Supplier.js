@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 
 const supplierSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true, 'El usuario es obligatorio']
+  },
   name: {
     type: String,
     required: [true, 'El nombre del proveedor es obligatorio'],
-    unique: true,
     trim: true,
     maxlength: [100, 'El nombre no puede exceder 100 caracteres']
   },
@@ -62,19 +66,19 @@ const supplierSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Índices
-supplierSchema.index({ name: 1 });
-supplierSchema.index({ isActive: 1 });
-supplierSchema.index({ 'contact.email': 1 });
+// Índices para optimización y unicidad por usuario
+supplierSchema.index({ user: 1, name: 1 }, { unique: true });
+supplierSchema.index({ user: 1, isActive: 1 });
+supplierSchema.index({ user: 1, 'contact.email': 1 });
 
 // Virtual para obtener contacto principal
 supplierSchema.virtual('primaryContact').get(function() {
   return this.contact.email || this.contact.phone || 'Sin contacto';
 });
 
-// Método estático para obtener proveedores activos
-supplierSchema.statics.getActiveSuppliers = function() {
-  return this.find({ isActive: true }).sort({ name: 1 });
+// Método estático para obtener proveedores activos por usuario
+supplierSchema.statics.getActiveSuppliers = function(userId) {
+  return this.find({ user: userId, isActive: true }).sort({ name: 1 });
 };
 
 module.exports = mongoose.model('Supplier', supplierSchema);
