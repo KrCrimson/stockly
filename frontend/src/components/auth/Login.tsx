@@ -206,18 +206,6 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Demo credentials info */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800 mb-2">Credenciales de prueba:</h3>
-          <div className="text-sm text-blue-700 space-y-1">
-            <p><strong>Usuario 1:</strong> admin@stockly.com / admin123</p>
-            <p><strong>Usuario 2:</strong> manager@stockly.com / manager123</p>
-            <p><strong>Usuario 3:</strong> employee@stockly.com / employee123</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
