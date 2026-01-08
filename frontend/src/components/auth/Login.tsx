@@ -12,6 +12,7 @@ interface LocationState {
   from?: {
     pathname: string;
   };
+  message?: string;
 }
 
 const Login: React.FC = () => {
@@ -25,10 +26,18 @@ const Login: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Obtener la ruta de donde viene el usuario
   const state = location.state as LocationState;
   const from = state?.from?.pathname || '/dashboard';
+
+  // Mostrar mensaje de éxito si viene del registro
+  useEffect(() => {
+    if (state?.message) {
+      setSuccessMessage(state.message);
+    }
+  }, [state]);
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -98,6 +107,16 @@ const Login: React.FC = () => {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           
+          {/* Success message */}
+          {successMessage && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md flex items-center space-x-2">
+              <svg className="h-4 w-4 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm text-green-700">{successMessage}</span>
+            </div>
+          )}
+
           {/* Error message */}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center space-x-2">

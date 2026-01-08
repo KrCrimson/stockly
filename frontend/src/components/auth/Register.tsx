@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock, AlertCircle, Loader2, Eye, EyeOff, User } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { api } from '../../services/api';
 
 interface RegisterFormData {
   name: string;
@@ -66,16 +67,50 @@ const Register: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Aquí iría la llamada a la API de registro
-      // Por ahora, solo simular éxito y redirigir al login
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/login', { 
-          state: { message: 'Cuenta creada exitosamente. Inicia sesión para continuar.' }
-        });
-      }, 2000);
-    } catch (error) {
-      setError('Error al crear la cuenta. Inténtalo de nuevo.');
+      // Llamar a la API de registro
+      const response = await api.post('/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
+
+      if (response.data.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          navigate('/login', { 
+            state: { message: 'Cuenta creada exitosamente. Inicia sesión para continuar.' }
+          });
+        }, 2000);
+      } else {
+        setError(response.data.message || 'Error al crear la cuenta');
+      }
+    } catch (error: any) {
+      console.error('Error en registro:', error);
+      
+      // Manejo específico de errores
+      if (error.response) {
+        // Error de respuesta del servidor
+        if (error.response.status === 400) {
+          const message = error.response.data?.message || 'Datos inválidos';
+          if (message.toLowerCase().includes('email')) {
+            setError('El correo electrónico ya está registrado');
+          } else if (message.toLowerCase().includes('validation')) {
+            setError('Por favor verifica que todos los campos sean válidos');
+          } else {
+            setError(message);
+          }
+        } else if (error.response.status === 500) {
+          setError('Error interno del servidor. Inténtalo más tarde.');
+        } else {
+          setError(error.response.data?.message || 'Error al crear la cuenta');
+        }
+      } else if (error.request) {
+        // Error de conexión
+        setError('No se pudo conectar al servidor. Verifica tu conexión a internet.');
+      } else {
+        // Error desconocido
+        setError('Ocurrió un error inesperado. Inténtalo de nuevo.');
+      }
     } finally {
       setIsSubmitting(false);
     }
