@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BarChart3, Package, TrendingUp, FileText, Menu, X, Tags, Users } from 'lucide-react';
 import { useState } from 'react';
+import Header from './layout/Header';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -100,6 +101,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       {/* Contenido principal */}
       <div className="lg:pl-64 flex flex-col flex-1">
+        {/* Header */}
+        <Header />
+        
         {/* Header móvil */}
         <div className="sticky top-0 z-10 flex-shrink-0 flex h-16 bg-white shadow lg:hidden">
           <button

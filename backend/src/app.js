@@ -37,6 +37,7 @@ app.use(limiter);
 const allowedOrigins = [
   'http://localhost:3000',
   'https://stockly-sooty.vercel.app',
+  'https://your-vercel-app.vercel.app', // Reemplaza con tu URL real de Vercel
   process.env.FRONTEND_URL
 ].filter(Boolean);
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AppProvider } from './context/AppContext';
+import { AuthProvider } from './contexts/AuthContext';
+import Login from './components/auth/Login';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
@@ -11,24 +13,37 @@ import Reports from './pages/Reports';
 
 function App() {
   return (
-    <AppProvider>
+    <AuthProvider>
       <Router>
         <div className="App">
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/categories" element={<Categories />} />
-              <Route path="/suppliers" element={<Suppliers />} />
-              <Route path="/movements" element={<Movements />} />
-              <Route path="/reports" element={<Reports />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
-            </Routes>
-          </Layout>
+          <Routes>
+            {/* Ruta de login (no protegida) */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Rutas protegidas */}
+            <Route 
+              path="/*" 
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Routes>
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/products" element={<Products />} />
+                      <Route path="/categories" element={<Categories />} />
+                      <Route path="/suppliers" element={<Suppliers />} />
+                      <Route path="/movements" element={<Movements />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Routes>
+                  </Layout>
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
         </div>
       </Router>
-    </AppProvider>
+    </AuthProvider>
   );
 }
 
