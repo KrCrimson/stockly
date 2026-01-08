@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/auth/Login';
+import Register from './components/auth/Register';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -17,8 +18,9 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
-            {/* Ruta de login (no protegida) */}
+            {/* Rutas de autenticación (no protegidas) */}
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             
             {/* Ruta raíz que redirige */}
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
