@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const {
   getSuppliers,
   getActiveSuppliers,
@@ -20,11 +20,11 @@ router.get('/active', getActiveSuppliers);
 // Rutas CRUD básicas
 router.route('/')
   .get(getSuppliers)
-  .post(authorize('admin', 'manager'), createSupplier);
+  .post(createSupplier);
 
 router.route('/:id')
   .get(getSupplier)
-  .put(authorize('admin', 'manager'), updateSupplier)
-  .delete(authorize('admin'), deleteSupplier);
+  .put(updateSupplier)
+  .delete(deleteSupplier);
 
 module.exports = router;

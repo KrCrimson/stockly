@@ -12,6 +12,7 @@ import Categories from './pages/Categories';
 import Suppliers from './pages/Suppliers';
 import Movements from './pages/Movements';
 import Reports from './pages/Reports';
+import DataCleanup from './components/admin/DataCleanup';
 
 function App() {
   return (
@@ -72,6 +73,14 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Reports />
+                </Layout>
+              </ProtectedRoute>
+            } />
+            
+            <Route path="/admin/cleanup" element={
+              <ProtectedRoute>
+                <Layout>
+                  <DataCleanup />
                 </Layout>
               </ProtectedRoute>
             } />

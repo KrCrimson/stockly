@@ -4,12 +4,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Obtener dashboard principal
 // @route   GET /api/dashboard
-// @access  Public
+// @access  Private
 const getDashboard = asyncHandler(async (req, res) => {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const userId = req.user._id;
   
-  // Estadísticas generales
+  // Estadísticas generales filtradas por usuario
   const [
     totalProducts,
     activeProducts,
@@ -18,19 +19,21 @@ const getDashboard = asyncHandler(async (req, res) => {
     recentMovements,
     totalInventoryValue
   ] = await Promise.all([
-    Product.countDocuments({}),
-    Product.countDocuments({ isActive: true }),
+    Product.countDocuments({ user: userId }),
+    Product.countDocuments({ user: userId, isActive: true }),
     Product.countDocuments({
+      user: userId,
       $expr: { $lte: ['$currentStock', '$minStockLevel'] },
       isActive: true
     }),
-    StockMovement.countDocuments({ isReversed: false }),
+    StockMovement.countDocuments({ user: userId, isReversed: false }),
     StockMovement.countDocuments({
+      user: userId,
       createdAt: { $gte: sevenDaysAgo },
       isReversed: false
     }),
     Product.aggregate([
-      { $match: { isActive: true } },
+      { $match: { user: userId, isActive: true } },
       {
         $group: {
           _id: null,
@@ -44,6 +47,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   const movementsByType = await StockMovement.aggregate([
     {
       $match: {
+        user: userId,
         createdAt: { $gte: thirtyDaysAgo },
         isReversed: false
       }
@@ -61,6 +65,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   const topProductsByMovement = await StockMovement.aggregate([
     {
       $match: {
+        user: userId,
         createdAt: { $gte: thirtyDaysAgo },
         isReversed: false
       }
@@ -83,6 +88,11 @@ const getDashboard = asyncHandler(async (req, res) => {
       }
     },
     {
+      $match: {
+        'product.user': userId
+      }
+    },
+    {
       $project: {
         product: { $arrayElemAt: ['$product', 0] },
         movementCount: 1,
@@ -93,7 +103,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   
   // Productos más valiosos
   const mostValuableProducts = await Product.aggregate([
-    { $match: { isActive: true, currentStock: { $gt: 0 } } },
+    { $match: { user: userId, isActive: true, currentStock: { $gt: 0 } } },
     {
       $addFields: {
         totalValue: { $multiply: ['$currentStock', '$unitPrice'] }
@@ -114,6 +124,7 @@ const getDashboard = asyncHandler(async (req, res) => {
   
   // Productos con stock crítico
   const criticalStockProducts = await Product.find({
+    user: userId,
     $expr: { $lte: ['$currentStock', '$minStockLevel'] },
     isActive: true
   }).select('name sku currentStock minStockLevel category').limit(10);
@@ -143,15 +154,17 @@ const getDashboard = asyncHandler(async (req, res) => {
 
 // @desc    Obtener análisis de tendencias
 // @route   GET /api/dashboard/trends
-// @access  Public
+// @access  Private
 const getTrends = asyncHandler(async (req, res) => {
   const days = parseInt(req.query.days) || 30;
   const startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const userId = req.user._id;
   
   // Tendencias de movimientos por día
   const movementTrends = await StockMovement.aggregate([
     {
       $match: {
+        user: userId,
         createdAt: { $gte: startDate },
         isReversed: false
       }
@@ -178,6 +191,7 @@ const getTrends = asyncHandler(async (req, res) => {
   const inventoryValueTrend = await StockMovement.aggregate([
     {
       $match: {
+        user: userId,
         createdAt: { $gte: startDate },
         isReversed: false
       }
@@ -227,7 +241,7 @@ const getTrends = asyncHandler(async (req, res) => {
 
 // @desc    Obtener reportes personalizados
 // @route   POST /api/dashboard/reports
-// @access  Public
+// @access  Private
 const getCustomReport = asyncHandler(async (req, res) => {
   const {
     reportType,
@@ -238,7 +252,10 @@ const getCustomReport = asyncHandler(async (req, res) => {
     warehouses
   } = req.body;
   
+  const userId = req.user._id;
+  
   const filter = {
+    user: userId,
     createdAt: {
       $gte: dateFrom ? new Date(dateFrom) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       $lte: dateTo ? new Date(dateTo) : new Date()
@@ -290,6 +307,7 @@ const getCustomReport = asyncHandler(async (req, res) => {
       reportData = await Product.aggregate([
         {
           $match: {
+            user: userId,
             isActive: true,
             ...(categories && categories.length > 0 ? { category: { $in: categories } } : {})
           }

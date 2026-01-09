@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const {
   getCategories,
   getActiveCategories,
@@ -20,11 +20,11 @@ router.get('/active', getActiveCategories);
 // Rutas CRUD básicas
 router.route('/')
   .get(getCategories)
-  .post(authorize('admin', 'manager'), createCategory);
+  .post(createCategory);
 
 router.route('/:id')
   .get(getCategory)
-  .put(authorize('admin', 'manager'), updateCategory)
-  .delete(authorize('admin'), deleteCategory);
+  .put(updateCategory)
+  .delete(deleteCategory);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express = require('express');
-const { protect, authorize } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const {
   getProducts,
   getProduct,
@@ -26,14 +26,14 @@ router.get('/suppliers', getSuppliers);
 // Rutas CRUD básicas
 router.route('/')
   .get(getProducts)
-  .post(authorize('admin', 'manager'), validateRequest(productSchemas.create), createProduct);
+  .post(validateRequest(productSchemas.create), createProduct);
 
 router.route('/:id')
   .get(getProduct)
-  .put(authorize('admin', 'manager'), validateRequest(productSchemas.update), updateProduct)
-  .delete(authorize('admin'), deleteProduct);
+  .put(validateRequest(productSchemas.update), updateProduct)
+  .delete(deleteProduct);
 
 // Ruta para actualizar stock
-router.patch('/:id/stock', authorize('admin', 'manager', 'employee'), updateStock);
+router.patch('/:id/stock', updateStock);
 
 module.exports = router;

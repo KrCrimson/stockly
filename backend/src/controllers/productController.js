@@ -50,9 +50,9 @@ const getProducts = asyncHandler(async (req, res) => {
 
 // @desc    Obtener producto por ID
 // @route   GET /api/products/:id
-// @access  Public
+// @access  Private
 const getProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!product) {
     return res.status(404).json({
@@ -114,9 +114,9 @@ const updateProduct = asyncHandler(async (req, res) => {
 
 // @desc    Eliminar producto
 // @route   DELETE /api/products/:id
-// @access  Public
+// @access  Private
 const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findOneAndDelete({ _id: req.params.id, user: req.user._id });
   
   if (!product) {
     return res.status(404).json({

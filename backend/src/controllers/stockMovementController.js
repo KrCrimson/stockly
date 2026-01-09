@@ -4,13 +4,13 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Obtener todos los movimientos de stock
 // @route   GET /api/stock-movements
-// @access  Public
+// @access  Private
 const getStockMovements = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || 20;
   const skip = (page - 1) * limit;
   
-  const filter = { isReversed: false };
+  const filter = { isReversed: false, user: req.user._id };
   
   // Filtros
   if (req.query.product) {
@@ -59,9 +59,9 @@ const getStockMovements = asyncHandler(async (req, res) => {
 
 // @desc    Obtener movimiento por ID
 // @route   GET /api/stock-movements/:id
-// @access  Public
+// @access  Private
 const getStockMovement = asyncHandler(async (req, res) => {
-  const movement = await StockMovement.findById(req.params.id)
+  const movement = await StockMovement.findOne({ _id: req.params.id, user: req.user._id })
     .populate('product', 'name sku category unitPrice');
   
   if (!movement) {
@@ -79,12 +79,12 @@ const getStockMovement = asyncHandler(async (req, res) => {
 
 // @desc    Crear movimiento de stock
 // @route   POST /api/stock-movements
-// @access  Public
+// @access  Private
 const createStockMovement = asyncHandler(async (req, res) => {
   const { product: productId, type, quantity, reason, ...otherData } = req.body;
   
-  // Verificar que el producto existe
-  const product = await Product.findById(productId);
+  // Verificar que el producto existe y pertenece al usuario
+  const product = await Product.findOne({ _id: productId, user: req.user._id });
   if (!product) {
     return res.status(404).json({
       success: false,
@@ -131,6 +131,7 @@ const createStockMovement = asyncHandler(async (req, res) => {
     reason,
     previousStock,
     newStock,
+    user: req.user._id,
     ...otherData
   });
   
@@ -152,7 +153,7 @@ const createStockMovement = asyncHandler(async (req, res) => {
 
 // @desc    Reversar movimiento de stock
 // @route   POST /api/stock-movements/:id/reverse
-// @access  Public
+// @access  Private
 const reverseStockMovement = asyncHandler(async (req, res) => {
   const { performedBy, notes } = req.body;
   
@@ -163,7 +164,7 @@ const reverseStockMovement = asyncHandler(async (req, res) => {
     });
   }
   
-  const movement = await StockMovement.findById(req.params.id);
+  const movement = await StockMovement.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!movement) {
     return res.status(404).json({

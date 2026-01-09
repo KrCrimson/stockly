@@ -3,9 +3,9 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Obtener todas las categorías
 // @route   GET /api/categories
-// @access  Public
+// @access  Private
 const getCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.find().sort({ name: 1 });
+  const categories = await Category.find({ user: req.user._id }).sort({ name: 1 });
   
   res.status(200).json({
     success: true,
@@ -16,9 +16,9 @@ const getCategories = asyncHandler(async (req, res) => {
 
 // @desc    Obtener categorías activas
 // @route   GET /api/categories/active
-// @access  Public
+// @access  Private
 const getActiveCategories = asyncHandler(async (req, res) => {
-  const categories = await Category.getActiveCategories();
+  const categories = await Category.getActiveCategories(req.user._id);
   
   res.status(200).json({
     success: true,
@@ -29,9 +29,9 @@ const getActiveCategories = asyncHandler(async (req, res) => {
 
 // @desc    Obtener una categoría por ID
 // @route   GET /api/categories/:id
-// @access  Public
+// @access  Private
 const getCategory = asyncHandler(async (req, res) => {
-  const category = await Category.findById(req.params.id);
+  const category = await Category.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!category) {
     return res.status(404).json({
@@ -48,9 +48,14 @@ const getCategory = asyncHandler(async (req, res) => {
 
 // @desc    Crear nueva categoría
 // @route   POST /api/categories
-// @access  Public
+// @access  Private
 const createCategory = asyncHandler(async (req, res) => {
-  const category = await Category.create(req.body);
+  const categoryData = {
+    ...req.body,
+    user: req.user._id
+  };
+  
+  const category = await Category.create(categoryData);
   
   res.status(201).json({
     success: true,
@@ -61,10 +66,10 @@ const createCategory = asyncHandler(async (req, res) => {
 
 // @desc    Actualizar categoría
 // @route   PUT /api/categories/:id
-// @access  Public
+// @access  Private
 const updateCategory = asyncHandler(async (req, res) => {
-  const category = await Category.findByIdAndUpdate(
-    req.params.id,
+  const category = await Category.findOneAndUpdate(
+    { _id: req.params.id, user: req.user._id },
     req.body,
     { new: true, runValidators: true }
   );
@@ -85,9 +90,9 @@ const updateCategory = asyncHandler(async (req, res) => {
 
 // @desc    Eliminar categoría
 // @route   DELETE /api/categories/:id
-// @access  Public
+// @access  Private
 const deleteCategory = asyncHandler(async (req, res) => {
-  const category = await Category.findById(req.params.id);
+  const category = await Category.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!category) {
     return res.status(404).json({

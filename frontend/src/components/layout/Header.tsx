@@ -81,6 +81,15 @@ const Header: React.FC = () => {
                       </div>
 
                       {/* Opciones del menú */}
+                      <Link
+                        to="/admin/cleanup"
+                        onClick={() => setIsDropdownOpen(false)}
+                        className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <Shield className="h-4 w-4 mr-2" />
+                        Limpiar Datos
+                      </Link>
+
                       <button
                         onClick={() => {
                           setIsDropdownOpen(false);

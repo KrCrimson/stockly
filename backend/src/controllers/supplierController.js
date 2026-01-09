@@ -3,9 +3,9 @@ const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Obtener todos los proveedores
 // @route   GET /api/suppliers
-// @access  Public
+// @access  Private
 const getSuppliers = asyncHandler(async (req, res) => {
-  const suppliers = await Supplier.find().sort({ name: 1 });
+  const suppliers = await Supplier.find({ user: req.user._id }).sort({ name: 1 });
   
   res.status(200).json({
     success: true,
@@ -16,9 +16,9 @@ const getSuppliers = asyncHandler(async (req, res) => {
 
 // @desc    Obtener proveedores activos
 // @route   GET /api/suppliers/active
-// @access  Public
+// @access  Private
 const getActiveSuppliers = asyncHandler(async (req, res) => {
-  const suppliers = await Supplier.getActiveSuppliers();
+  const suppliers = await Supplier.getActiveSuppliers(req.user._id);
   
   res.status(200).json({
     success: true,
@@ -29,9 +29,9 @@ const getActiveSuppliers = asyncHandler(async (req, res) => {
 
 // @desc    Obtener un proveedor por ID
 // @route   GET /api/suppliers/:id
-// @access  Public
+// @access  Private
 const getSupplier = asyncHandler(async (req, res) => {
-  const supplier = await Supplier.findById(req.params.id);
+  const supplier = await Supplier.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!supplier) {
     return res.status(404).json({
@@ -48,9 +48,14 @@ const getSupplier = asyncHandler(async (req, res) => {
 
 // @desc    Crear nuevo proveedor
 // @route   POST /api/suppliers
-// @access  Public
+// @access  Private
 const createSupplier = asyncHandler(async (req, res) => {
-  const supplier = await Supplier.create(req.body);
+  const supplierData = {
+    ...req.body,
+    user: req.user._id
+  };
+  
+  const supplier = await Supplier.create(supplierData);
   
   res.status(201).json({
     success: true,
@@ -61,10 +66,10 @@ const createSupplier = asyncHandler(async (req, res) => {
 
 // @desc    Actualizar proveedor
 // @route   PUT /api/suppliers/:id
-// @access  Public
+// @access  Private
 const updateSupplier = asyncHandler(async (req, res) => {
-  const supplier = await Supplier.findByIdAndUpdate(
-    req.params.id,
+  const supplier = await Supplier.findOneAndUpdate(
+    { _id: req.params.id, user: req.user._id },
     req.body,
     { new: true, runValidators: true }
   );
@@ -85,9 +90,9 @@ const updateSupplier = asyncHandler(async (req, res) => {
 
 // @desc    Eliminar proveedor
 // @route   DELETE /api/suppliers/:id
-// @access  Public
+// @access  Private
 const deleteSupplier = asyncHandler(async (req, res) => {
-  const supplier = await Supplier.findById(req.params.id);
+  const supplier = await Supplier.findOne({ _id: req.params.id, user: req.user._id });
   
   if (!supplier) {
     return res.status(404).json({
