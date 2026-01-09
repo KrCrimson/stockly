@@ -14,7 +14,7 @@ export default function DataCleanup() {
   const [error, setError] = useState<string>('');
 
   const handleCleanData = async () => {
-    if (!confirm('¿Está seguro de que desea eliminar todos los datos compartidos? Esta acción no se puede deshacer.')) {
+    if (!window.confirm('¿Está seguro de que desea eliminar todos los datos compartidos? Esta acción no se puede deshacer.')) {
       return;
     }
 
@@ -33,7 +33,7 @@ export default function DataCleanup() {
   };
 
   const handleAssignData = async () => {
-    if (!confirm('¿Está seguro de que desea asignar todos los datos compartidos a su usuario?')) {
+    if (!window.confirm('¿Está seguro de que desea asignar todos los datos compartidos a su usuario?')) {
       return;
     }
 
